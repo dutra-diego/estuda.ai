@@ -1,0 +1,22 @@
+# Dependências locais (serão instaladas no container)
+node_modules
+
+# Next.js build (será gerado no container)
+.next
+out
+dist
+.vercel
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# IDE
+.vscode
+.idea
+.DS_Store

@@ -1,0 +1,25 @@
+# Dependências
+node_modules
+
+# Build outputs
+dist
+build
+
+# teste
+generated
+coverage
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# IDE
+.vscode
+.idea
+.DS_Store
+

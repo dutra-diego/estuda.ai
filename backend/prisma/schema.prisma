@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+  Chat      Chat[]
+  Student   Student?
+  Teacher   Teacher?
+}
+
+model Class {
+  id          String       @id @default(uuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  teacherId   String
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  enrollments Enrollment[]
+  invitations Invitation[]
+  Chat        Chat[]
+  Report      Report?
+}
+
+model Student {
+  id          String       @id
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [id], references: [id])
+  enrollments Enrollment[]
+  invitations Invitation[]
+}
+
+model Teacher {
+  id          String       @id
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [id], references: [id])
+  classes     Class[]
+  invitations Invitation[]
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  userId    String
+  title     String
+  classId   String?
+  class     Class?    @relation(fields: [classId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  text       String   @db.Text
+  difficulty String
+  sender     String
+  createdAt  DateTime @default(now())
+  chatId     String
+  chat       Chat     @relation(fields: [chatId], references: [id])
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  classId   String
+  studentId String
+  joinedAt  DateTime @default(now())
+  class     Class    @relation(fields: [classId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id])
+
+  @@unique([classId, studentId])
+  @@index([studentId])
+  @@index([classId])
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  email     String?
+  classId   String
+  teacherId String
+  studentId String?
+  createdAt DateTime @default(now())
+  status    String   @default("pending")
+
+  class   Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+
+  @@unique([classId, email])
+  @@index([classId])
+  @@index([email])
+}
+
+model Report {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  classId   String   @unique
+  class     Class    @relation(fields: [classId], references: [id])
+}
