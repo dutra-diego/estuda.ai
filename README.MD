@@ -81,7 +81,7 @@ Crie um arquivo `.env` dentro da pasta `frontend` com as seguintes variáveis:
 NEXT_PUBLIC_API_URL=http://localhost:8080
 
 # JWT Secret (mesmo do backend, usado apenas no server-side/middleware)
-SECRET_JWT="mesmo_segredo_do_backend"
+SECRET_JWT="SAME_BACKEND_JWT"
 
 ### Inicie com Docker
 ```bash
@@ -261,6 +261,12 @@ POSTGRES_PORT=5432
 
 
 ## 📸 Screenshots
+![Imagem do chat](https://i.imgur.com/tEkUcr5.png)
+
+![Imagem do relatório](https://i.imgur.com/yRc14Y3.png)
+
+![Imagem dos alunos](https://i.imgur.com/PpIJWln.png)
+
 
 
 
