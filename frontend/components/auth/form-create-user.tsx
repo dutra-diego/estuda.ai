@@ -76,7 +76,7 @@ export function FormCreateUser() {
 				</label>
 				<input
 					{...register("name")}
-					type="name"
+					type="text"
 					name="name"
 					id="name"
 					className={`${errors.name ? "border-red-500" : ""} border border-gray-300 rounded-md shadow-sm p-2`}
@@ -159,6 +159,7 @@ export function FormCreateUser() {
 				<Button
 					onClick={() => setFormType("login")}
 					variant={"link"}
+					size={"lk"}
 					className=" text-zinc-100 hover:text-blue-400"
 					type="button"
 				>

@@ -69,10 +69,12 @@ export function FormUpdateClass({
 		setEditingClassId(null);
 	}
 
-	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		inputRef.current?.focus();
+		const input = document.querySelector(
+			'input[name="name"]',
+		) as HTMLInputElement | null;
+		input?.focus();
 	}, []);
 
 	return (
@@ -81,7 +83,6 @@ export function FormUpdateClass({
 			onSubmit={handleSubmit(onSubmit)}
 		>
 			<input
-				ref={inputRef}
 				className="h-full w-full pr-2 border-none bg-transparent outline-none focus:ring-0"
 				type="text"
 				{...register("name")}

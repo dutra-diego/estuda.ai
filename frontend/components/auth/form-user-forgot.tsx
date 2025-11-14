@@ -28,6 +28,7 @@ export function FormUserForgot() {
 				<Button
 					onClick={() => setFormType("login")}
 					variant={"link"}
+					size={"lk"}
 					className=" text-zinc-100 hover:text-blue-400"
 					type="button"
 				>

@@ -95,11 +95,11 @@ export function FormLogin() {
 					Entrar
 				</Button>
 			</form>
-			<div className="w-full px-1 py-2 flex justify-between">
-				<Button onClick={() => setFormType("forgot")} variant={"link"}>
+			<div className="w-full py-2 flex justify-between">
+				<Button onClick={() => setFormType("forgot")} variant={"link"} size={"lk"}>
 					Esqueci a senha
 				</Button>
-				<Button onClick={() => setFormType("register")} variant={"link"}>
+				<Button onClick={() => setFormType("register")} variant={"link"} size={"lk"}>
 					Criar conta
 				</Button>
 			</div>

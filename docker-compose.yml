@@ -35,8 +35,6 @@ services:
       - ./backend/package.json:/app/package.json
       - ./backend/package-lock.json:/app/package-lock.json
       - ./backend/tsconfig.json:/app/tsconfig.json
-      - /app/node_modules
-      - /app/generated
     depends_on:
       postgres:
         condition: service_healthy
