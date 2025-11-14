@@ -235,18 +235,6 @@ docker exec -it estuda-ai-backend npx prisma migrate dev
 docker exec -it estuda-ai-backend npm run seed
 ```
 
-
-
-### Porta já em uso
-
-Se alguma porta estiver em uso, você pode alterá-las no arquivo `.env` na raiz do projeto:
-
-```env
-BACKEND_PORT=8080
-FRONTEND_PORT=3000
-POSTGRES_PORT=5432
-```
-
 ### Problemas de conexão com o banco de dados
 
 1. Verifique se o contêiner do PostgreSQL está rodando:
