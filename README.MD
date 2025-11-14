@@ -247,15 +247,12 @@ docker exec -it estuda-ai-backend npm run seed
    docker-compose logs postgres
    ```
 
-
 ## 📸 Screenshots
 ![Imagem do chat](https://i.imgur.com/tEkUcr5.png)
 
 ![Imagem do relatório](https://i.imgur.com/yRc14Y3.png)
 
 ![Imagem dos alunos](https://i.imgur.com/PpIJWln.png)
-
-
 
 
 ## 🎓 Aprendizados
@@ -268,9 +265,6 @@ Este projeto foi desenvolvido como TCC e permitiu aprender:
 - Testes automatizados
 - TypeScript full-stack
 
-## 📄 Licença
-
-Este projeto é parte de um Trabalho de Conclusão de Curso (TCC).
 
 ## 👨‍💻 Autor
 
