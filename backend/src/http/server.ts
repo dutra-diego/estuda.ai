@@ -29,7 +29,7 @@ server.register(fastifyCors, {
 
 server.setErrorHandler((error, request, reply) => {
 	request.log.error(error);
-	if (error.validation) {
+	if (error.validation || error.message === "Invalid request") {
 		return reply
 			.status(400)
 			.send({ error: "Invalid request", details: error.validation });
@@ -43,7 +43,9 @@ server.setErrorHandler((error, request, reply) => {
 	if (error.message === "User not found") {
 		return reply.status(404).send({ error: "User not found" });
 	}
-
+	if(error.message === "AI service error"){
+		return reply.status(502).send({ error: "AI service error" });
+	}
 	return reply.status(500).send({ error: "Internal Server Error" });
 });
 

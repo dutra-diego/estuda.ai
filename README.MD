@@ -1,4 +1,4 @@
-# Estuda.AI
+# Estude.AI
 
 Sistema de educação inteligente com IA para auxiliar professores e alunos no processo de ensino-aprendizagem, onde o aluno possui um professor socrático que sempre o incentiva a ter pensamentos críticos e o professor terá um relatório de dificuldades que os alunos possuem.
 
@@ -123,7 +123,7 @@ Após o seed, você pode fazer login com:
 ## 📦 Estrutura do Projeto
 
 ```
-estuda.ai/
+estude.ai/
 ├── backend/
 │   ├── src/
 │   │   ├── config/         # Configurações (env)
@@ -168,14 +168,14 @@ docker-compose down
 docker-compose up --build
 
 # Acessar containers
-docker exec -it estuda-ai-backend sh
-docker exec -it estuda-ai-frontend sh
+docker exec -it estude-ai-backend sh
+docker exec -it estude-ai-frontend sh
 
 # Migrations
-docker exec -it estuda-ai-backend npx prisma migrate dev
+docker exec -it estude-ai-backend npx prisma migrate dev
 
 # Seed
-docker exec -it estuda-ai-backend npm run seed
+docker exec -it estude-ai-backend npm run seed
 ```
 
 
@@ -214,25 +214,25 @@ docker-compose up --build
 
 ```bash
 # Backend
-docker exec -it estuda-ai-backend sh
+docker exec -it estude-ai-backend sh
 
 # Frontend
-docker exec -it estuda-ai-frontend sh
+docker exec -it estude-ai-frontend sh
 
 # Banco de dados
-docker exec -it estuda-ai-postgres psql -U admin -d estuda_ai
+docker exec -it estude-ai-postgres psql -U admin -d estude_ai
 ```
 
 ### Executar migrations do Prisma
 
 ```bash
-docker exec -it estuda-ai-backend npx prisma migrate dev
+docker exec -it estude-ai-backend npx prisma migrate dev
 ```
 
 ### Executar seed do banco de dados
 
 ```bash
-docker exec -it estuda-ai-backend npm run seed
+docker exec -it estude-ai-backend npm run seed
 ```
 
 ### Problemas de conexão com o banco de dados

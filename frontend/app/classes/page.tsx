@@ -39,9 +39,8 @@ export default function Class() {
 			router.push(`/classes/${newClassId}`);
 		},
 
-		onError: (error, _, context) => {
-			console.error("Erro ao criar turma:", error);
-
+		onError: (_error, _, context) => {
+	
 			if (context?.previousClasses) {
 				queryClient.setQueryData(["classes"], context.previousClasses);
 			}

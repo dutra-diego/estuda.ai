@@ -17,7 +17,7 @@ export const messageService = {
 		});
 		if (!chat) {
 			throw new Error(
-				"Forbidden: Chat not found or you do not have permission.",
+				"Unauthorized",
 			);
 		}
 
@@ -29,7 +29,7 @@ export const messageService = {
 
 		const lastMessage = data[data.length - 1];
 		if (!lastMessage) {
-			throw new Error("No messages provided");
+			throw new Error("Invalid request");
 		}
 		const { text, difficulty } = lastMessage;
 		const fullHistory = [...previousMessages, ...data];

@@ -2,19 +2,19 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: estuda-ai-postgres
+    container_name: estude-ai-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
-      POSTGRES_DB: ${POSTGRES_DB:-estuda_ai}
+      POSTGRES_DB: ${POSTGRES_DB:-estude-ai}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - estuda-ai-network
+      - estude-ai-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-estuda_ai}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-estude-ai}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +24,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: estuda-ai-backend
+    container_name: estude-ai-backend
     env_file: 
       - ./backend/.env
     ports:
@@ -39,7 +39,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - estuda-ai-network
+      - estude-ai-network
     restart: unless-stopped
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run seed && npm run dev"
 
@@ -47,7 +47,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: estuda-ai-frontend
+    container_name: estude-ai-frontend
     env_file: 
       - ./frontend/.env
     ports:
@@ -59,7 +59,7 @@ services:
     depends_on:
       - backend
     networks:
-      - estuda-ai-network
+      - estude-ai-network
     restart: unless-stopped
 
 volumes:
@@ -67,6 +67,6 @@ volumes:
     driver: local
 
 networks:
-  estuda-ai-network:
+  estude-ai-network:
     driver: bridge
 

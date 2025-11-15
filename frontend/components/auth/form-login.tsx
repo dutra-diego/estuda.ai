@@ -28,10 +28,17 @@ export function FormLogin() {
 			router.push("/chat");
 		},
 		onError: (error) => {
-			if (error instanceof AxiosError && error.status === 500) {
-				toast.error("Usuário e/ou senha inválidos.");
+			if (error instanceof AxiosError) {
+				switch (error.response?.status) {
+					case 401:
+						toast.error("Email ou senha incorretos");
+						break;
+					case 500:
+						toast.error("Erro no servidor. Tente novamente");
+						break;
+				}
 			} else {
-				toast.error("Não foi possível conectar ao servidor.");
+				toast.error("Erro inesperado");
 			}
 		},
 	});
@@ -96,10 +103,18 @@ export function FormLogin() {
 				</Button>
 			</form>
 			<div className="w-full py-2 flex justify-between">
-				<Button onClick={() => setFormType("forgot")} variant={"link"} size={"lk"}>
+				<Button
+					onClick={() => setFormType("forgot")}
+					variant={"link"}
+					size={"lk"}
+				>
 					Esqueci a senha
 				</Button>
-				<Button onClick={() => setFormType("register")} variant={"link"} size={"lk"}>
+				<Button
+					onClick={() => setFormType("register")}
+					variant={"link"}
+					size={"lk"}
+				>
 					Criar conta
 				</Button>
 			</div>

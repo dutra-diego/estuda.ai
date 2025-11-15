@@ -38,13 +38,13 @@ export const userService = {
 		});
 
 		if (!user) {
-			throw new Error("Invalid credentials");
+			throw new Error("Unauthorized");
 		}
 
 		const hashedCompare = await bcrypt.compare(data.password, user?.password);
 
 		if (!hashedCompare) {
-			throw new Error("Invalid credentials");
+			throw new Error("Unauthorized");
 		}
 
 		return user;
@@ -56,7 +56,7 @@ export const userService = {
 			select: { name: true, email: true },
 		});
 		if (!user) {
-			throw new Error("User not found");
+			throw new Error("Unauthorized");
 		}
 
 		return user;
