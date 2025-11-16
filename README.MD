@@ -19,7 +19,7 @@ Sistema de educação inteligente com IA para auxiliar professores e alunos no p
 
 ### Backend
 - Node.js 20 + TypeScript
-- Express.js
+- Fastify + Fastify Type Provider Zod
 - Prisma ORM
 - PostgreSQL
 - Google Gemini AI
