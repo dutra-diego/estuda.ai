@@ -37,9 +37,7 @@ describe("Message Service", () => {
 
 			await expect(
 				messageService.createMessage(chatId, role, userId, inputData),
-			).rejects.toThrow(
-				"Forbidden: Chat not found or you do not have permission.",
-			);
+			).rejects.toThrow("Unauthorized");
 		});
 
 		it("should throw an error if AI service fails", async () => {
