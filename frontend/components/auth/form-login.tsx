@@ -61,7 +61,7 @@ export function FormLogin() {
 				onSubmit={handleSubmit(onSubmit)}
 				className="flex flex-col w-full space-y-2"
 			>
-				<label htmlFor="email" className="text-md font-medium text-zinc-100">
+				<label htmlFor="email" className="font-medium text-zinc-100">
 					Email
 				</label>
 
@@ -77,7 +77,7 @@ export function FormLogin() {
 				{errors.email && (
 					<p className="px-2 text-red-500 text-sm">{errors.email.message}</p>
 				)}
-				<label htmlFor="password" className="text-md font-medium text-zinc-100">
+				<label htmlFor="password" className="font-medium text-zinc-100">
 					Senha
 				</label>
 				<input
