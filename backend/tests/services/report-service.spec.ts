@@ -101,7 +101,7 @@ describe("Report Service", () => {
 
 			await expect(
 				reportService.createReport(teacherId, classId),
-			).rejects.toThrow("AI message generation failed");
+			).rejects.toThrow("AI service error");
 			expect(prisma.report.create).not.toHaveBeenCalled();
 		});
 	});

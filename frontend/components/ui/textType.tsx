@@ -14,7 +14,7 @@ import {
 interface TextTypeProps {
 	className?: string;
 	showCursor?: boolean;
-	hideCursorWhileTyping?: boolean;
+	showCursorWhileTyping?: boolean;
 	cursorCharacter?: string | React.ReactNode;
 	cursorBlinkDuration?: number;
 	cursorClassName?: string;
@@ -42,7 +42,7 @@ const TextType = ({
 	loop = true,
 	className = "",
 	showCursor = true,
-	hideCursorWhileTyping = false,
+	showCursorWhileTyping = false,
 	cursorCharacter = "|",
 	cursorClassName = "",
 	cursorBlinkDuration = 0.5,
@@ -77,6 +77,11 @@ const TextType = ({
 		return textColors[currentTextIndex % textColors.length];
 	};
 
+	const shouldHideCursor =
+		showCursorWhileTyping &&
+		currentCharIndex >= textArray[currentTextIndex].length &&
+		!isDeleting;
+
 	useEffect(() => {
 		if (!startOnVisible || !containerRef.current) return;
 
@@ -98,19 +103,25 @@ const TextType = ({
 	useEffect(() => {
 		if (!showCursor || !cursorRef.current) return;
 
-		gsap.set(cursorRef.current, { opacity: 1 });
-		const animation = gsap.to(cursorRef.current, {
-			opacity: 0,
-			duration: cursorBlinkDuration,
-			repeat: -1,
-			yoyo: true,
-			ease: "power2.inOut",
-		});
+		let animation: gsap.core.Tween | null = null;
+
+		if (!shouldHideCursor) {
+			gsap.set(cursorRef.current, { opacity: 1 });
+			animation = gsap.to(cursorRef.current, {
+				opacity: 0,
+				duration: cursorBlinkDuration,
+				repeat: -1,
+				yoyo: true,
+				ease: "power2.inOut",
+			});
+		} else {
+			gsap.set(cursorRef.current, { opacity: 0 });
+		}
 
 		return () => {
-			animation.kill();
+			if (animation) animation.kill();
 		};
-	}, [showCursor, cursorBlinkDuration]);
+	}, [showCursor, cursorBlinkDuration, shouldHideCursor]);
 
 	useEffect(() => {
 		if (!isVisible) return;
@@ -119,7 +130,7 @@ const TextType = ({
 
 		const currentText = textArray[currentTextIndex];
 		const processedText = reverseMode
-			? Array.from(currentText).split("").reverse().join("")
+			? Array.from(currentText).reverse().join("")
 			: currentText;
 
 		const executeTypingAnimation = () => {
@@ -182,11 +193,8 @@ const TextType = ({
 		reverseMode,
 		variableSpeed,
 		onSentenceComplete,
+		getRandomSpeed,
 	]);
-
-	const shouldHideCursor =
-		hideCursorWhileTyping &&
-		(currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
 	return createElement(
 		Component,

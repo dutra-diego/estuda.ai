@@ -1,13 +1,14 @@
 import "dotenv/config";
 import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
-import fastify from "fastify";
+import fastify, { type FastifyError } from "fastify";
 import {
 	serializerCompiler,
 	validatorCompiler,
 	type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { env } from "../config/env";
+import { isAppError } from "./lib/errors";
 import { chatRoutes } from "./routes/chat-routes";
 import { classRoutes } from "./routes/class-routes";
 import { invitationRoutes } from "./routes/invitation-routes";
@@ -27,25 +28,20 @@ server.register(fastifyCors, {
 	credentials: true,
 });
 
-server.setErrorHandler((error, request, reply) => {
+server.setErrorHandler((error: FastifyError, request, reply) => {
 	request.log.error(error);
-	if (error.validation || error.message === "Invalid request") {
+
+	if (isAppError(error)) {
+		return reply.status(error.statusCode).send({ error: error.message });
+	}
+
+	const validation = (error as { validation?: unknown }).validation;
+	if (validation) {
 		return reply
 			.status(400)
-			.send({ error: "Invalid request", details: error.validation });
+			.send({ error: "Validation failed", details: validation });
 	}
-	if (error.message === "Email already exists") {
-		return reply.status(409).send({ error: "Email already exists" });
-	}
-	if (error.message === "Unauthorized") {
-		return reply.status(401).send({ error: "Unauthorized" });
-	}
-	if (error.message === "User not found") {
-		return reply.status(404).send({ error: "User not found" });
-	}
-	if(error.message === "AI service error"){
-		return reply.status(502).send({ error: "AI service error" });
-	}
+
 	return reply.status(500).send({ error: "Internal Server Error" });
 });
 

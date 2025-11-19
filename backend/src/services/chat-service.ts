@@ -1,4 +1,5 @@
 import { getMessageAI } from "../http/functions/get-message-ai";
+import { AppError } from "../http/lib/errors";
 import { prisma } from "../http/lib/prisma";
 import type {
 	CreateChatType,
@@ -35,7 +36,7 @@ export const chatService = {
 			},
 		]);
 		if (!answer) {
-			throw new Error("AI service error");
+			throw new AppError(500, "AI service error");
 		}
 		const chatId = await prisma.chat.create({
 			data: {

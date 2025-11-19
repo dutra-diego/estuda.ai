@@ -12,7 +12,7 @@ async function verifyToken(token: string) {
 	}
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const token = request.cookies.get("authToken")?.value;
 	const payload = await verifyToken(token || "");
 	const userRole = payload?.role;

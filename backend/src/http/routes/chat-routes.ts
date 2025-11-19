@@ -32,7 +32,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (server) => {
 		},
 		async (req, reply) => {
 			const { userId, role } = await req.jwtVerify<JwtLoginType>();
-
+			
 			const chatId = await chatService.createChatWithMessage(
 				userId,
 				role,

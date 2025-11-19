@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { getMessageAI } from "../http/functions/get-message-ai";
+import { AppError } from "../http/lib/errors";
 import { prisma } from "../http/lib/prisma";
 import type { geminiTeacherSchemaType } from "../schemas/gemini-schema";
 
@@ -52,7 +53,7 @@ export const reportService = {
 			geminiHistoryStudents as geminiTeacherSchemaType[],
 		);
 		if (!aiMessage) {
-			throw new Error("AI message generation failed");
+			throw new AppError(500, "AI service error");
 		}
 		return await prisma.report.create({
 			data: {

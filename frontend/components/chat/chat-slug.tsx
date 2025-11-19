@@ -12,7 +12,7 @@ const MessageItem = React.memo<{
 
 	if (message.sender === "user") {
 		return (
-			<p className="flex text-wrap text-justify bg-gray-900 w-1/2 p-3 mt-2 rounded-md">
+			<p className="flex text-wrap text-lg text-justify bg-gray-900 w-1/2 p-3 mt-2 rounded-md">
 				{message.text}
 			</p>
 		);
@@ -21,18 +21,18 @@ const MessageItem = React.memo<{
 	if (isLast) {
 		return (
 			<TextType
-				className="flex text-wrap text-justify bg-gray-900 self-end-safe w-1/2 p-3 mt-2 rounded-md"
+				className="flex text-wrap text-lg text-justify bg-gray-900 self-end-safe w-1/2 p-3 mt-2 rounded-md"
 				text={cleanText}
-				typingSpeed={35}
+				typingSpeed={50}
 				pauseDuration={1500}
-				showCursor={false}
-				cursorCharacter="|"
+				showCursorWhileTyping={true}
+				cursorCharacter="_"
 			/>
 		);
 	}
 
 	return (
-		<p className="flex text-wrap text-justify  bg-gray-900 self-end-safe w-1/2 p-3 mt-2 rounded-md">
+		<p className="flex text-wrap text-lg text-justify  bg-gray-900 self-end-safe w-1/2 p-3 mt-2 rounded-md">
 			{cleanText}
 		</p>
 	);

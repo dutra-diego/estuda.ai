@@ -7,6 +7,9 @@ jest.mock("../../src/http/lib/gemini", () => ({
 		models: {
 			generateContent: jest.fn(),
 		},
+		chats: {
+			create: jest.fn(),
+		},
 	},
 }));
 
@@ -14,13 +17,12 @@ describe("getMessageAI", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		(gemini.models.generateContent as jest.Mock).mockResolvedValue({
-			candidates: [
-				{
-					content: {
-						parts: [{ text: "Mocked AI response" }],
-					},
-				},
-			],
+			text: "Mocked AI response",
+		});
+		(gemini.chats.create as jest.Mock).mockReturnValue({
+			sendMessage: jest.fn().mockResolvedValue({
+				text: "Mocked AI response",
+			}),
 		});
 	});
 
@@ -36,19 +38,12 @@ describe("getMessageAI", () => {
 		await getMessageAI("student", mockMessages);
 
 		// Verifica se foi chamado com a estrutura correta
-		expect(gemini.models.generateContent).toHaveBeenCalledWith(
+		expect(gemini.chats.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				model: "gemini-2.5-flash",
-				contents: expect.any(Array),
+				history: expect.any(Array),
 				config: expect.objectContaining({
-					systemInstruction: expect.objectContaining({
-						role: "system",
-						parts: expect.arrayContaining([
-							expect.objectContaining({
-								text: expect.stringContaining("NÍVEL FÁCIL"), // Menos específico
-							}),
-						]),
-					}),
+					systemInstruction: expect.stringContaining("NÍVEL FÁCIL"),
 				}),
 			}),
 		);
@@ -65,17 +60,11 @@ describe("getMessageAI", () => {
 
 		await getMessageAI("student", mockMessages);
 
-		expect(gemini.models.generateContent).toHaveBeenCalledWith(
+		expect(gemini.chats.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				model: "gemini-2.5-flash",
 				config: expect.objectContaining({
-					systemInstruction: expect.objectContaining({
-						parts: expect.arrayContaining([
-							expect.objectContaining({
-								text: expect.stringContaining("NÍVEL MÉDIO"), // Menos específico
-							}),
-						]),
-					}),
+					systemInstruction: expect.stringContaining("NÍVEL MÉDIO"),
 				}),
 			}),
 		);

@@ -159,7 +159,7 @@ describe("User Service", () => {
 			(bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
 			await expect(userService.loginUser(loginData)).rejects.toThrow(
-				"Invalid credentials",
+				"Unauthorized",
 			);
 
 			expect(bcrypt.compare).toHaveBeenCalledWith(
@@ -175,7 +175,7 @@ describe("User Service", () => {
 
 			// Act & Assert
 			await expect(userService.loginUser(loginData)).rejects.toThrow(
-				"Invalid credentials",
+				"Unauthorized",
 			);
 			expect(bcrypt.compare).not.toHaveBeenCalled();
 		});
@@ -196,7 +196,7 @@ describe("User Service", () => {
 			(bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
 
 			await expect(userService.loginUser(loginData)).rejects.toThrow(
-				"Invalid credentials",
+				"Unauthorized",
 			);
 
 			expect(bcrypt.compare).toHaveBeenCalledWith(

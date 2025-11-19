@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { env } from "../config/env";
+import { AppError } from "../http/lib/errors";
 import { prisma } from "../http/lib/prisma";
 import type { CreateUserType, LoginUserType } from "../schemas/user-schema";
 export const userService = {
@@ -8,7 +9,7 @@ export const userService = {
 			where: { email: data.email },
 		});
 		if (user) {
-			throw new Error("Email already exists");
+			throw new AppError(409, "Email already exists");
 		}
 		const createdUser = await prisma.user.create({
 			data: {
@@ -38,13 +39,13 @@ export const userService = {
 		});
 
 		if (!user) {
-			throw new Error("Invalid credentials");
+			throw new AppError(401, "Unauthorized");
 		}
 
 		const hashedCompare = await bcrypt.compare(data.password, user?.password);
 
 		if (!hashedCompare) {
-			throw new Error("Invalid credentials");
+			throw new AppError(401, "Unauthorized");
 		}
 
 		return user;
@@ -56,7 +57,7 @@ export const userService = {
 			select: { name: true, email: true },
 		});
 		if (!user) {
-			throw new Error("User not found");
+			throw new AppError(404, "User not found");
 		}
 
 		return user;

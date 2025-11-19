@@ -1,3 +1,4 @@
+import { AppError } from "../http/lib/errors";
 import { prisma } from "../http/lib/prisma";
 import type {
 	CreateInvitationType,
@@ -10,7 +11,7 @@ export const invitationService = {
 			where: { email: data.email },
 		});
 		if (!emailExist) {
-			throw new Error("Email does not exist");
+			throw new AppError(404, "Email does not exist");
 		}
 		return await prisma.invitation.create({
 			data: {

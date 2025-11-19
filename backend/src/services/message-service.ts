@@ -1,5 +1,6 @@
 import { appEmitter } from "../events/app-emiter";
 import { getMessageAI } from "../http/functions/get-message-ai";
+import { AppError } from "../http/lib/errors";
 import { prisma } from "../http/lib/prisma";
 import type { geminiStudentSchemaType } from "../schemas/gemini-schema";
 import type { CreateMessageType } from "../schemas/message-schema";
@@ -16,9 +17,7 @@ export const messageService = {
 			select: { id: true },
 		});
 		if (!chat) {
-			throw new Error(
-				"Unauthorized",
-			);
+			throw new AppError(404, "Chat not found");
 		}
 
 		const previousMessages = await prisma.message.findMany({
@@ -29,7 +28,7 @@ export const messageService = {
 
 		const lastMessage = data[data.length - 1];
 		if (!lastMessage) {
-			throw new Error("Invalid request");
+			throw new AppError(400, "Invalid request");
 		}
 		const { text, difficulty } = lastMessage;
 		const fullHistory = [...previousMessages, ...data];
@@ -38,7 +37,7 @@ export const messageService = {
 			fullHistory as geminiStudentSchemaType[],
 		);
 		if (!answer) {
-			throw new Error("AI service error");
+			throw new AppError(500, "AI service error");
 		}
 
 		const [, aiMessage] = await prisma.$transaction([
