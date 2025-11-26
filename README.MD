@@ -130,7 +130,6 @@ estude.ai/
 │   │   ├── controllers/    # Controladores HTTP
 │   │   ├── services/       # Lógica de negócio
 │   │   ├── schemas/        # Validações Zod
-│   │   ├── handlers/       # Middlewares (auth)
 │   │   ├── events/         # Event emitter (SSE)
 │   │   └── http/           # Server e rotas
 │   ├── prisma/
