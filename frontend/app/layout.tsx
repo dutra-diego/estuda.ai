@@ -23,7 +23,7 @@ const RobotoFontMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Estude.ai",
+	title: "Estuda.ai",
 	description: "Sistema de chat educacional com IA",
 };
 

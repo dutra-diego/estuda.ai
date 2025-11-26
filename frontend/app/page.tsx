@@ -13,7 +13,7 @@ export default function Home() {
 			<div className="flex flex-col items-center justify-center h-20">
 				<h1 className="text-2xl font-bold text-gray-200">
 					<TextType
-						text={["Bem vindo a Estude.AI"]}
+						text={["Bem vindo a Estuda.AI"]}
 						typingSpeed={75}
 						pauseDuration={1500}
 						showCursor={true}
