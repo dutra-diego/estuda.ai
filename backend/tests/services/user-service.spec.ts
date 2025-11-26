@@ -4,7 +4,7 @@ import { mockDeep, mockReset } from "jest-mock-extended";
 import { prisma } from "../../src/http/lib/prisma";
 import { userService } from "../../src/services/user-service";
 
-// Mocka as dependências externas
+
 jest.mock("../../src/http/lib/prisma", () => ({
 	__esModule: true,
 	prisma: mockDeep<PrismaClient>(),
@@ -86,7 +86,7 @@ describe("User Service", () => {
 				data: {
 					name: userData.name,
 					email: userData.email,
-					password: "hashed_password_teacher", // Agora o valor esperado vai bater
+					password: "hashed_password_teacher",
 					role: userData.role,
 					Student: undefined,
 					Teacher: {
@@ -169,11 +169,11 @@ describe("User Service", () => {
 		});
 
 		it("should throw an error for invalid credentials if user not found", async () => {
-			// Arrange
+
 			const loginData = { email: "test@example.com", password: "password123" };
 			(prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-			// Act & Assert
+		
 			await expect(userService.loginUser(loginData)).rejects.toThrow(
 				"Unauthorized",
 			);

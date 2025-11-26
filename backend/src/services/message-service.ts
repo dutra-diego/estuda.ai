@@ -12,30 +12,36 @@ export const messageService = {
 		userId: string,
 		data: CreateMessageType[],
 	) {
-		const chat = await prisma.chat.findFirst({
-			where: { id: chatId, userId: userId },
-			select: { id: true },
-		});
+		const [chat, previousMessages] = await Promise.all([
+			prisma.chat.findFirst({
+				select: { id: true },
+				where: { id: chatId, userId: userId },
+			}),
+			prisma.message.findMany({
+				select: { text: true, sender: true, difficulty: true },
+				where: { chatId: chatId },
+				orderBy: { createdAt: "desc" },
+			}),
+		]);
+
 		if (!chat) {
 			throw new AppError(404, "Chat not found");
 		}
-
-		const previousMessages = await prisma.message.findMany({
-			where: { chatId: chatId },
-			select: { text: true, sender: true, difficulty: true },
-			orderBy: { createdAt: "asc" },
-		});
 
 		const lastMessage = data[data.length - 1];
 		if (!lastMessage) {
 			throw new AppError(400, "Invalid request");
 		}
+
 		const { text, difficulty } = lastMessage;
-		const fullHistory = [...previousMessages, ...data];
+		const sortedHistory = previousMessages.reverse();
+		const fullHistory = [...sortedHistory, ...data];
+
 		const answer = await getMessageAI(
 			role,
 			fullHistory as geminiStudentSchemaType[],
 		);
+
 		if (!answer) {
 			throw new AppError(500, "AI service error");
 		}
@@ -62,6 +68,10 @@ export const messageService = {
 					sender: true,
 				},
 			}),
+			prisma.chat.update({
+				where: { id: chatId },
+				data: { updatedAt: new Date() },
+			}),
 		]);
 
 		appEmitter.emit("send-sse-event", chatId, {
@@ -72,21 +82,23 @@ export const messageService = {
 		return aiMessage;
 	},
 
-	async getMessagesByChatId(id: string, userId: string) {
+	async getMessagesByChatId(id: string, userId: string, cursor = 0) {
 		return await prisma.message.findMany({
-			where: {
-				chatId: id,
-				chat: {
-					userId: userId,
-				},
-			},
+			take: 20,
+			skip: cursor,
 			select: {
 				id: true,
 				text: true,
 				sender: true,
 				difficulty: true,
 			},
-			orderBy: { createdAt: "asc" },
+			where: {
+				chatId: id,
+				chat: {
+					userId: userId,
+				},
+			},
+			orderBy: [{ createdAt: "desc" }, { sender: "asc" }],
 		});
 	},
 };

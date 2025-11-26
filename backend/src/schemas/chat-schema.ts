@@ -16,12 +16,18 @@ export const updateChatSchema = z.object({
 	id: z.uuid(),
 	title: z.string().min(1).max(100),
 });
+
 export const updateChatClassSchema = z.object({
 	id: z.uuid(),
 	classId: z.uuid(),
 });
+
 export const paramsChatSchema = z.object({
 	userId: z.uuid(),
+});
+
+export const getChatQuerySchema = z.object({
+	cursor: z.coerce.number().optional().default(0),
 });
 
 export type CreateChatType = z.infer<typeof createChatSchema>;
@@ -30,4 +36,4 @@ export type CreateChatWithMessageType = z.infer<
 >;
 export type updateChatClassType = z.infer<typeof updateChatClassSchema>;
 export type UpdateChatType = z.infer<typeof updateChatSchema>;
-export type ParamsChatType = z.infer<typeof paramsChatSchema>;
+export type GetChatQueryType = z.infer<typeof getChatQuerySchema>;

@@ -10,7 +10,7 @@ export const verifyUserRole = (requiredRole: "student" | "teacher") => {
 			if (role !== requiredRole) {
 				throw new AppError(
 					403,
-					`Acesso negado. Rota permitida apenas para: ${requiredRole}.`,
+					`Access denied. Route allowed only for: ${requiredRole}.`,
 				);
 			}
 		} catch (_err) {

@@ -37,7 +37,7 @@ describe("getMessageAI", () => {
 
 		await getMessageAI("student", mockMessages);
 
-		// Verifica se foi chamado com a estrutura correta
+
 		expect(gemini.chats.create).toHaveBeenCalledWith(
 			expect.objectContaining({
 				model: "gemini-2.5-flash",
@@ -117,7 +117,7 @@ describe("getMessageAI", () => {
 		expect(gemini.models.generateContent).toHaveBeenCalledWith(
 			expect.objectContaining({
 				model: "gemini-2.5-flash",
-				// CORREÇÃO: Verifique se 'contents' é uma string que contém o texto esperado.
+		
 				contents: expect.stringContaining("--- Conversa 1 ---"),
 			}),
 		);

@@ -35,17 +35,36 @@ export function FormUpdateChat({
 		mutationFn: updateChatTitle,
 		onMutate: async (chats: { id: string; title: string }) => {
 			await queryClient.cancelQueries({ queryKey: ["chats"] });
-			const previous = queryClient.getQueryData<IChat[]>(["chats"]);
-			queryClient.setQueryData<IChat[]>(["chats"], (old) =>
-				(old ?? []).map((c) =>
-					c.id === chats.id ? { ...c, title: chats.title } : c,
-				),
+			const previous = queryClient.getQueryData<{
+				pages: IChat[][];
+				pageParams: number[];
+			}>(["chats"]);
+			queryClient.setQueryData<{ pages: IChat[][]; pageParams: number[] }>(
+				["chats"],
+				(old) => {
+					if (!old) return old;
+					return {
+						...old,
+						pages: old.pages.map((page) =>
+							page.map((c) =>
+								c.id === chats.id ? { ...c, title: chats.title } : c,
+							),
+						),
+					};
+				},
 			);
 			return { previous };
 		},
-		onError: (_err, _vars, context?: { previous?: IChat[] }) => {
+		onError: (
+			_err,
+			_vars,
+			context?: { previous?: { pages: IChat[][]; pageParams: number[] } },
+		) => {
 			if (context?.previous) {
-				queryClient.setQueryData(["chats"], context.previous);
+				queryClient.setQueryData<{ pages: IChat[][]; pageParams: number[] }>(
+					["chats"],
+					context.previous,
+				);
 			}
 		},
 		onSettled: () => {

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Check, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { queryClient } from "@/lib/react-query";
@@ -68,7 +68,6 @@ export function FormUpdateClass({
 	function handleCancelEdit() {
 		setEditingClassId(null);
 	}
-
 
 	useEffect(() => {
 		const input = document.querySelector(

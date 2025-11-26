@@ -3,6 +3,7 @@ export interface IChatMessage {
 	difficulty: string;
 	text: string;
 	sender: "user" | "ai";
+	isOptimistic?: boolean;
 }
 
 export interface IChatMessageCreate {

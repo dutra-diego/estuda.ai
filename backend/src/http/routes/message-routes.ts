@@ -1,8 +1,8 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-
 import type { JwtLoginType } from "../../schemas/jwtLogin-schema";
 import {
 	createMessageArraySchema,
+	getMessageQuerySchema,
 	messageIdParamSchema,
 } from "../../schemas/message-schema";
 import { messageService } from "../../services/message-service";
@@ -31,13 +31,20 @@ export const messageRoutes: FastifyPluginAsyncZod = async (server) => {
 		{
 			schema: {
 				params: messageIdParamSchema,
+				querystring: getMessageQuerySchema,
 			},
+
 			preHandler: [verifyUserRole("student")],
 		},
 		async (req, reply) => {
 			const { userId } = await req.jwtVerify<JwtLoginType>();
 			const { chatId } = req.params;
-			const messages = await messageService.getMessagesByChatId(chatId, userId);
+			const { cursor } = req.query;
+			const messages = await messageService.getMessagesByChatId(
+				chatId,
+				userId,
+				Number(cursor),
+			);
 			return reply.status(200).send(messages);
 		},
 	);

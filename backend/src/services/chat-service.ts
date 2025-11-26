@@ -65,17 +65,19 @@ export const chatService = {
 		return chatId;
 	},
 
-	async getAllChatsByUserId(userId: string) {
+	async getAllChatsByUserId(userId: string, skip = 0) {
 		const chat = await prisma.chat.findMany({
-			where: {
-				userId: userId,
-			},
+			take: 11,
+			skip,
 			select: {
 				id: true,
 				title: true,
 				classId: true,
 			},
-			orderBy: { updatedAt: "desc" },
+			where: {
+				userId: userId,
+			},
+			orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
 		});
 		return chat;
 	},

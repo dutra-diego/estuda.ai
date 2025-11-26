@@ -49,7 +49,7 @@ describe("Report Service", () => {
 
 	describe("createReport", () => {
 		it("should create a report if student history exists", async () => {
-			// Arrange
+	
 			const expectedReport = { id: "report-1", content: mockAiMessage };
 			const mockTxClient: MockPrismaTransactionClient = {
 				enrollment: {
@@ -145,7 +145,7 @@ describe("Report Service", () => {
 
 		it("should return an empty array if no student history is found for update", async () => {
 			const mockTxClient = {
-				enrollment: { findMany: jest.fn().mockResolvedValue([]) }, // Simula nenhum aluno
+				enrollment: { findMany: jest.fn().mockResolvedValue([]) }, 
 				chat: { findMany: jest.fn() },
 			};
 			mockTransactionImplementation(mockTxClient);

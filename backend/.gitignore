@@ -1,9 +1,12 @@
 node_modules
 
+
 .env
 
 generated
 
 coverage
+
+build
 
 

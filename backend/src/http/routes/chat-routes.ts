@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import {
 	createChatSchema,
 	createChatWithMessageSchema,
+	getChatQuerySchema,
 	updateChatClassSchema,
 	updateChatSchema,
 } from "../../schemas/chat-schema";
@@ -32,7 +33,7 @@ export const chatRoutes: FastifyPluginAsyncZod = async (server) => {
 		},
 		async (req, reply) => {
 			const { userId, role } = await req.jwtVerify<JwtLoginType>();
-			
+
 			const chatId = await chatService.createChatWithMessage(
 				userId,
 				role,
@@ -45,7 +46,9 @@ export const chatRoutes: FastifyPluginAsyncZod = async (server) => {
 		"/chat/class",
 		{
 			schema: { body: updateChatClassSchema },
+			preHandler: [verifyUserRole("student")],
 		},
+
 		async (req, reply) => {
 			const { userId } = await req.jwtVerify<JwtLoginType>();
 			await chatService.updateChatClass(userId, req.body);
@@ -55,11 +58,18 @@ export const chatRoutes: FastifyPluginAsyncZod = async (server) => {
 	server.get(
 		"/chat",
 		{
+			schema: {
+				querystring: getChatQuerySchema,
+			},
 			preHandler: [verifyUserRole("student")],
 		},
 		async (req, reply) => {
 			const { userId } = await req.jwtVerify<JwtLoginType>();
-			const chats = await chatService.getAllChatsByUserId(userId);
+			const { cursor } = req.query;
+			const chats = await chatService.getAllChatsByUserId(
+				userId,
+				Number(cursor),
+			);
 			return reply.status(200).send(chats);
 		},
 	);

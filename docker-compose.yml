@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
-      POSTGRES_DB: ${POSTGRES_DB:-estude-ai}
+      POSTGRES_DB: ${POSTGRES_DB:-estude_ai}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -14,7 +14,7 @@ services:
     networks:
       - estude-ai-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-estude-ai}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-estude_ai} -q"]
       interval: 10s
       timeout: 5s
       retries: 5

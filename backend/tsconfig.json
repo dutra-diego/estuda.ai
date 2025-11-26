@@ -10,6 +10,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "rootDir": "./src", 
+    "outDir": "./build",
    
-  }
+  },
+
+    "include": ["src"],
+
 }

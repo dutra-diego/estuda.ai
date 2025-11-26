@@ -93,7 +93,7 @@ describe("Invitation Service", () => {
 
 	describe("updateInvitation", () => {
 		it("should update status without a transaction if not 'accepted'", async () => {
-			// Arrange
+		
 			const email = "student@example.com";
 			const classId = "class-abc";
 			const updateData = {

@@ -40,7 +40,6 @@ export default function Page() {
 	const {
 		data: report,
 		isLoading: reportLoading,
-		error: reportError,
 	} = useQuery({
 		queryKey: ["report", slug],
 		queryFn: () => getReport(slug),
@@ -53,7 +52,6 @@ export default function Page() {
 		data: invitations,
 		isLoading: invitationsLoading,
 		isError: invitationsError,
-		error,
 	} = useQuery({
 		queryKey: ["invitations", slug],
 		queryFn: () => getInvitationsTeacher(slug),
@@ -62,18 +60,7 @@ export default function Page() {
 		retry: false,
 	});
 
-	useEffect(() => {
-		if (reportError || error) {
-			const err = error as AxiosError;
-			const rperr = reportError as AxiosError;
-			if (err?.response?.status === 400 || rperr?.response?.status === 400) {
-				router.push("/");
-			} else {
-				toast.error("Erro ao carregar mensagens. Tente novamente.");
-			}
-		}
-	}, [reportError, error, router]);
-
+	
 	const createReportMutation = useMutation({
 		mutationFn: () => createReport({ classId: slug }),
 		onMutate: async () => {

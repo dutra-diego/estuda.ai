@@ -1,10 +1,11 @@
 "use client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { LogOut, MessageSquareMore, Pencil, SquarePlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { FormUpdateChat } from "@/components/chat/form-update-chat";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ import { getChat } from "@/services/get-chat";
 import { getMessages } from "@/services/get-messages";
 import { getUser } from "@/services/get-user";
 import type { IChat } from "@/types/chat";
+import { Spinner } from "../ui/spinner";
 
 export function SideChats() {
 	const [editingChatId, setEditingChatId] = useState<string | null>(null);
@@ -45,61 +47,103 @@ export function SideChats() {
 		retry: false,
 	});
 
-	const { data: chatData } = useQuery({
+	const {
+		data: chatData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteQuery({
 		queryKey: ["chats"],
-		queryFn: getChat,
-		enabled: !!user,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		refetchOnMount: true,
-		staleTime: Infinity,
-	});
-
-	const createNewChatMutation = useMutation({
-		mutationFn: createChat,
-
-		onMutate: async () => {
-			await queryClient.cancelQueries({ queryKey: ["chats"] });
-
-			const previousChats = queryClient.getQueryData<IChat[]>(["chats"]);
-
-			const optimisticChat: IChat = {
-				id: `temp-${Date.now()}`,
-				title: "Novo Chat",
-				classId: "",
-			};
-
-			queryClient.setQueryData<IChat[]>(["chats"], (old) =>
-				old ? [optimisticChat, ...old] : [optimisticChat],
-			);
-
-			setOpenMobile(false);
-			router.push(`/chat/${optimisticChat.id}`);
-
-			return { previousChats, optimisticChat };
-		},
-
-		onSuccess: (chat, _, context) => {
-			queryClient.setQueryData<IChat[]>(["chats"], (old) => {
-				if (!old) return [chat];
-				return old.map((c) => (c.id === context?.optimisticChat.id ? chat : c));
-			});
-
-			router.replace(`/chat/${chat.id}`);
-		},
-
-		onError: (_error, _, context) => {
-			if (context?.previousChats) {
-				queryClient.setQueryData(["chats"], context.previousChats);
-			}
-
-			router.push("/chat");
-		},
-
-		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["chats"] });
+		queryFn: ({ pageParam }) => getChat(pageParam),
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			if (!Array.isArray(lastPage) || lastPage.length < 11) return undefined;
+			const pages = Array.isArray(allPages) ? allPages : [];
+			return pages.flat().length;
 		},
 	});
+
+	const { ref, inView } = useInView();
+
+	useEffect(() => {
+		if (inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [inView, hasNextPage, fetchNextPage]);
+
+	const { mutate: createNewChatMutation, isPending: createNewChatPending } =
+		useMutation({
+			mutationFn: createChat,
+
+			onMutate: async () => {
+				await queryClient.cancelQueries({ queryKey: ["chats"] });
+
+				const previousChats = queryClient.getQueryData<{ pages: IChat[][] }>([
+					"chats",
+				]);
+
+				const optimisticChat: IChat = {
+					id: `temp-${Date.now()}`,
+					title: "Novo Chat",
+					classId: "",
+				};
+				queryClient.setQueryData<{ pages: IChat[][]; pageParams: number[] }>(
+					["chats"],
+					(old) => {
+						const optimisticPage = [optimisticChat];
+						if (!old || !Array.isArray(old.pages)) {
+							return { pages: [optimisticPage], pageParams: [0] };
+						}
+						const newPages = old.pages.map((page) =>
+							Array.isArray(page) ? page : [],
+						);
+						if (newPages.length === 0) {
+							newPages.push(optimisticPage);
+						} else {
+							newPages[0] = [optimisticChat, ...newPages[0]];
+						}
+						return { ...old, pages: newPages };
+					},
+				);
+				setOpenMobile(false);
+				router.push(`/chat/${optimisticChat.id}`);
+
+				return { previousChats, optimisticChat };
+			},
+
+			onSuccess: (chat, _, context) => {
+				queryClient.setQueryData<{ pages: IChat[][]; pageParams: number[] }>(
+					["chats"],
+					(old) => {
+						if (!old) return { pages: [[chat]], pageParams: [0] };
+						return {
+							...old,
+							pages: old.pages.map((page) =>
+								page.map((c) =>
+									c.id === context?.optimisticChat.id ? chat : c,
+								),
+							),
+						};
+					},
+				);
+				router.replace(`/chat/${chat.id}`);
+			},
+
+			onError: (_error, _, context) => {
+				if (context?.previousChats) {
+					queryClient.setQueryData<{ pages: IChat[][] }>(
+						["chats"],
+						context.previousChats,
+					);
+				}
+
+				router.push("/chat");
+			},
+
+			onSettled: () => {
+				queryClient.invalidateQueries({ queryKey: ["chats"] });
+			},
+		});
 	useEffect(() => {
 		if (isSuccess && user) {
 			setUser(user);
@@ -112,9 +156,10 @@ export function SideChats() {
 
 	function handleChatClick(chatId: string) {
 		setOpenMobile(false);
-		queryClient.prefetchQuery({
+		queryClient.prefetchInfiniteQuery({
 			queryKey: ["getmessages", chatId],
-			queryFn: () => getMessages(chatId),
+			queryFn: ({ pageParam }) => getMessages(chatId, pageParam),
+			initialPageParam: 0,
 		});
 		router.push(`/chat/${chatId}`);
 	}
@@ -136,8 +181,8 @@ export function SideChats() {
 					</Link>
 					<Button
 						variant="ghost"
-						onClick={() => createNewChatMutation.mutate()}
-						disabled={!user}
+						onClick={() => createNewChatMutation()}
+						disabled={!user || createNewChatPending}
 					>
 						<SquarePlus width={16} />
 						<p>Novo Chat</p>
@@ -149,45 +194,55 @@ export function SideChats() {
 					<SidebarGroupContent className="">
 						<SidebarMenu>
 							<SidebarMenuItem>
-								{chatData?.map((chat) => (
-									<div key={chat.id}>
-										{editingChatId === chat.id ? (
-											<FormUpdateChat
-												chatId={chat.id}
-												setEditingChatId={setEditingChatId}
-											/>
-										) : (
-											<div
-												className={`flex items-center hover:bg-accent/10 px-1 justify-between rounded-md h-10 mb-2 ${activeChat === chat.id ? "bg-accent/10" : "bg-transparent"}`}
-											>
-												<Button
-													className="cursor-pointer flex-1 flex justify-start min-w-0"
-													onClick={() => handleChatClick(chat.id)}
-													type="button"
-													variant="chat"
-													aria-label="Abrir"
-												>
-													<MessageSquareMore />
-													<p className="flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap">
-														{chat.title}
-													</p>
-												</Button>
-												<Button
-													className="cursor-pointer hover:bg-accent/10 shrink-0"
-													type="button"
-													variant="chat"
-													onClick={(e) => {
-														e.stopPropagation();
-														handleEditClick(chat);
-													}}
-													aria-label="Editar"
-												>
-													<Pencil />
-												</Button>
+								{chatData?.pages.map((page, pageIndex) => (
+									<React.Fragment key={`page-${pageIndex + 1}`}>
+										{page.map((chat) => (
+											<div key={chat.id}>
+												{editingChatId === chat.id ? (
+													<FormUpdateChat
+														chatId={chat.id}
+														setEditingChatId={setEditingChatId}
+													/>
+												) : (
+													<div
+														className={`flex items-center hover:bg-accent/10 px-1 justify-between rounded-md h-10 mb-2 ${activeChat === chat.id
+																? "bg-accent/10"
+																: "bg-transparent"
+															}`}
+													>
+														<Button
+															className="cursor-pointer flex-1 flex justify-start min-w-0"
+															onClick={() => handleChatClick(chat.id)}
+															type="button"
+															variant="chat"
+															aria-label="Abrir"
+														>
+															<MessageSquareMore />
+															<p className="flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap">
+																{chat.title}
+															</p>
+														</Button>
+														<Button
+															className="cursor-pointer hover:bg-accent/10 shrink-0"
+															type="button"
+															variant="chat"
+															onClick={(e) => {
+																e.stopPropagation();
+																handleEditClick(chat);
+															}}
+															aria-label="Editar"
+														>
+															<Pencil />
+														</Button>
+													</div>
+												)}
 											</div>
-										)}
-									</div>
+										))}
+									</React.Fragment>
 								))}
+								<div ref={ref} className="h-4 w-full text-center">
+									{isFetchingNextPage && <Spinner />}
+								</div>
 							</SidebarMenuItem>
 						</SidebarMenu>
 					</SidebarGroupContent>

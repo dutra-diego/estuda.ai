@@ -28,10 +28,12 @@ export function SelectStudentClass({ slug }: { slug: string }) {
 	});
 
 	useEffect(() => {
-		const allChats = queryClient.getQueryData<IChat[]>(["chats"]);
+		const allChats = queryClient.getQueryData<{ pages: IChat[][] }>(["chats"]);
 
 		if (allChats) {
-			const chatMap = new Map(allChats.map((chat) => [chat.id, chat]));
+			const chatMap = new Map(
+				allChats.pages.flat().map((chat) => [chat.id, chat]),
+			);
 			const currentChat = chatMap.get(slug);
 
 			if (currentChat?.classId) {
@@ -42,9 +44,13 @@ export function SelectStudentClass({ slug }: { slug: string }) {
 
 		const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
 			if (event?.query.queryKey[0] === "chats") {
-				const updatedChats = queryClient.getQueryData<IChat[]>(["chats"]);
+				const updatedChats = queryClient.getQueryData<{ pages: IChat[][] }>([
+					"chats",
+				]);
 				if (updatedChats) {
-					const chatMap = new Map(updatedChats.map((chat) => [chat.id, chat]));
+					const chatMap = new Map(
+						updatedChats.pages.flat().map((chat) => [chat.id, chat]),
+					);
 					const updatedChat = chatMap.get(slug);
 
 					if (updatedChat?.classId) {
@@ -62,10 +68,22 @@ export function SelectStudentClass({ slug }: { slug: string }) {
 		mutationFn: (classId: string) => updateChatClass({ id: slug, classId }),
 		onMutate: async (classId) => {
 			await queryClient.cancelQueries({ queryKey: ["chats"] });
-			const previousChats = queryClient.getQueryData<IChat[]>(["chats"]);
+			const previousChats = queryClient.getQueryData<{
+				pages: IChat[][];
+				pageParams: number[];
+			}>(["chats"]);
 
-			queryClient.setQueryData<IChat[]>(["chats"], (old = []) =>
-				old.map((chat) => (chat.id === slug ? { ...chat, classId } : chat)),
+			queryClient.setQueryData<{ pages: IChat[][]; pageParams: number[] }>(
+				["chats"],
+				(old) => {
+					if (!old) return old;
+					return {
+						...old,
+						pages: old.pages.map((page) =>
+							page.map((chat) => (chat.id === slug ? { ...chat, classId } : chat)),
+						),
+					};
+				},
 			);
 
 			return { previousChats };

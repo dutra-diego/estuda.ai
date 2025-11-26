@@ -1,12 +1,12 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SendHorizonal } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useParams, useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useContext, useEffect, useRef } from "react";
 import { Controller, type SubmitHandler, useForm } from "react-hook-form";
+import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
 import z from "zod";
 import {
@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { FormTypeContext } from "@/contexts/form-context";
+import { useChatMessages } from "@/hooks/use-chat-messages";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { useChatSSE } from "@/hooks/use-chat-sse";
 import { createMessage } from "@/services/create-message";
-import { getMessages } from "@/services/get-messages";
 
 const ChatSlug = dynamic(
 	() =>
@@ -53,70 +55,89 @@ const formSchema = z.object({
 type typeForm = z.infer<typeof formSchema>;
 
 export default function Page() {
-	const router = useRouter();
-	const { user, setActiveChat, setLocalMessages } = useContext(FormTypeContext);
+	const { user, setActiveChat, setLocalMessages, localMessages } =
+		useContext(FormTypeContext);
 	const slug = useParams().slug as string;
+	const queryClient = useQueryClient();
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+	const contentRef = useRef<HTMLDivElement>(null);
 
 	const {
-		data: messages,
-		isLoading: messagesLoading,
-		error,
-	} = useQuery({
-		queryKey: ["getmessages", slug],
-		queryFn: () => getMessages(slug),
-		enabled: !!user,
-		refetchOnWindowFocus: false,
-		retry: false,
+		messagesData,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		messagesLoading,
+		initialLoad,
+		isReadyToLoadMore,
+	} = useChatMessages(slug, user, setLocalMessages);
+
+	const { liveMessageId } = useChatSSE(slug, setLocalMessages);
+
+	useChatScroll({
+		scrollContainerRef,
+		contentRef,
+		localMessages,
+		liveMessageId,
+		isFetchingNextPage,
+		initialLoad,
 	});
 
-	useEffect(() => {
-		if (error) {
-			const err = error as AxiosError;
-			if (err?.response?.status === 400) {
-				router.push("/");
-			} else {
-				toast.error("Erro ao carregar mensagens. Tente novamente.");
-			}
-		}
-	}, [error, router]);
+	const { ref, inView } = useInView();
+
+	const lastDifficulty = (() => {
+		if (!messagesData?.pages?.length) return "";
+		const firstPage = messagesData.pages[0];
+		if (!Array.isArray(firstPage) || firstPage.length === 0) return "";
+		const lastMessage = firstPage[firstPage.length - 1];
+		return lastMessage?.difficulty ?? "";
+	})();
 
 	const { register, handleSubmit, control, reset } = useForm<typeForm>({
 		resolver: zodResolver(formSchema),
 		mode: "onTouched",
 		defaultValues: {
-			difficulty: messages?.[messages.length - 1]?.difficulty ?? "",
+			difficulty: lastDifficulty,
 			text: "",
 			sender: "user",
 		},
 	});
+
 	useEffect(() => {
 		setActiveChat(slug);
-
 		reset({
-			difficulty: messages?.[messages.length - 1]?.difficulty ?? "",
+			difficulty: lastDifficulty,
 			sender: "user",
 			text: "",
 		});
-	}, [slug, setActiveChat, reset, messages]);
+	}, [slug, setActiveChat, reset, lastDifficulty]);
+
+	const lastFetchTime = useRef(0);
 
 	useEffect(() => {
-		if (messages && messages.length > 0) {
-			setLocalMessages(messages);
-			reset({
-				difficulty: messages?.[messages.length - 1]?.difficulty,
-				text: "",
-				sender: "user",
-			});
-		} else if (messages) {
-			setLocalMessages([]);
+		const now = Date.now();
+		if (inView && hasNextPage && !isFetchingNextPage && isReadyToLoadMore) {
+			if (now - lastFetchTime.current > 1000) {
+				lastFetchTime.current = now;
+				fetchNextPage();
+			}
 		}
-	}, [messages, setLocalMessages, reset]);
+	}, [
+		inView,
+		hasNextPage,
+		fetchNextPage,
+		isFetchingNextPage,
+		isReadyToLoadMore,
+	]);
 
 	const createMessageMutation = useMutation({
 		mutationFn: (data: typeForm) => createMessage(slug, [data]),
 		onError: () => {
 			setLocalMessages((prev) => prev.slice(0, -1));
 			toast.error("Erro ao enviar mensagem. Tente novamente.");
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["getmessages", slug] });
 		},
 	});
 
@@ -128,8 +149,19 @@ export default function Page() {
 				text: data.text,
 				difficulty: data.difficulty,
 				sender: "user",
+				isOptimistic: true,
 			},
 		]);
+
+		setTimeout(() => {
+			const scrollContainer = scrollContainerRef.current;
+			if (scrollContainer) {
+				scrollContainer.scrollTo({
+					top: scrollContainer.scrollHeight,
+					behavior: "smooth",
+				});
+			}
+		}, 100);
 
 		createMessageMutation.mutate(data);
 
@@ -143,6 +175,7 @@ export default function Page() {
 	const onInvalid = () => {
 		toast.error("Por favor, preencha todos os campos corretamente.");
 	};
+
 	return (
 		<div className="w-full flex flex-col items-center lg:justify-center p-2 ">
 			<form
@@ -190,11 +223,20 @@ export default function Page() {
 					</div>
 				</div>
 
-				<div className="w-11/12 p-3 h-[580px] lg:h-[700px] border border-zinc-500 rounded-md overflow-y-auto scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-thumb-gray-800 scrollbar-track-gray-900 scrollbar-hover:scrollbar-thumb-gray-600">
+				<div
+					ref={scrollContainerRef}
+					style={{ overflowAnchor: "auto" }}
+					className="w-11/12 p-3 h-[580px] lg:h-[700px] border border-zinc-500 rounded-md overflow-y-auto scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-thumb-gray-800 scrollbar-track-gray-900 scrollbar-hover:scrollbar-thumb-gray-600"
+				>
 					{messagesLoading ? (
 						<Spinner className="size-8 justify-self-center" />
 					) : (
-						<ChatSlug />
+						<div ref={contentRef} className="flex flex-col">
+							<div ref={ref} className="h-4 w-full flex justify-center">
+								{isFetchingNextPage && <Spinner />}
+							</div>
+							<ChatSlug liveMessageId={liveMessageId} />
+						</div>
 					)}
 				</div>
 				<div className="flex border border-zinc-500 w-11/12 items-center h-[150px] rounded-md">

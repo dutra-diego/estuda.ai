@@ -29,6 +29,8 @@ model Class {
   invitations Invitation[]
   Chat        Chat[]
   Report      Report?
+
+  @@index([createdAt, id])
 }
 
 model Student {
@@ -57,6 +59,8 @@ model Chat {
   messages  Message[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([updatedAt, id])
 }
 
 model Message {
@@ -67,6 +71,8 @@ model Message {
   createdAt  DateTime @default(now())
   chatId     String
   chat       Chat     @relation(fields: [chatId], references: [id])
+
+  @@index([createdAt, id])
 }
 
 model Enrollment {

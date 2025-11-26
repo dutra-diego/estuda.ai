@@ -154,7 +154,6 @@ describe("Chat Service", () => {
 		});
 
 		it("should throw an error if AI service fails to respond", async () => {
-			// Arrange
 			const userId = "user-123";
 			const role = "student";
 			const inputData = {

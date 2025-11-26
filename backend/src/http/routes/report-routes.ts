@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import type { JwtLoginType } from "../../schemas/jwtLogin-schema";
-import { reportParamsSchema, reportSchema } from "../../schemas/report-schema";
+import { reportSchema } from "../../schemas/report-schema";
 import { reportService } from "../../services/report-service";
 import { verifyUserRole } from "../handlers/verifyRole";
 
@@ -18,7 +18,7 @@ export const reportRoutes: FastifyPluginAsyncZod = async (server) => {
 	server.get(
 		"/report/:classId",
 		{
-			schema: { params: reportParamsSchema },
+			schema: { params: reportSchema },
 			preHandler: [verifyUserRole("teacher")],
 		},
 		async (req, reply) => {
