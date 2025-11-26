@@ -32,7 +32,6 @@ const MessageItem = React.memo<{
 	}
 
 	return (
-
 		<p className="flex text-wrap text-lg bg-gray-900 w-1/2 p-3 mt-2 rounded-md">
 			{cleanText}
 		</p>
@@ -40,14 +39,12 @@ const MessageItem = React.memo<{
 });
 
 MessageItem.displayName = "MessageItem";
+interface ChatSlugProps {
+	liveMessageId?: string;
+}
 
-export function ChatSlug({
-	liveMessageId,
-}: {
-	liveMessageId: string | null;
-}) {
-	const { activeChat, localMessages } =
-		useContext(FormTypeContext);
+export function ChatSlug({ liveMessageId }: ChatSlugProps) {
+	const { activeChat, localMessages } = useContext(FormTypeContext);
 
 	return (
 		<div className="w-full flex justify-between  flex-col">

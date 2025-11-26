@@ -235,7 +235,7 @@ export default function Page() {
 							<div ref={ref} className="h-4 w-full flex justify-center">
 								{isFetchingNextPage && <Spinner />}
 							</div>
-							<ChatSlug liveMessageId={liveMessageId} />
+							<ChatSlug liveMessageId={liveMessageId ?? undefined} />
 						</div>
 					)}
 				</div>
