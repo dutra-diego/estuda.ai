@@ -63,14 +63,14 @@ describe("Chat Service", () => {
 			expect(prisma.chat.findMany).toHaveBeenCalledTimes(1);
 			expect(prisma.chat.findMany).toHaveBeenCalledWith({
 				where: { userId },
-				orderBy: {
-					updatedAt: "desc",
-				},
+				take: 11,
+				skip: 0,
 				select: {
 					classId: true,
 					id: true,
 					title: true,
 				},
+				orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
 			});
 		});
 	});

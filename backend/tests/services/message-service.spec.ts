@@ -14,6 +14,7 @@ jest.mock("../../src/http/lib/prisma", () => ({
 
 		chat: {
 			findFirst: jest.fn(),
+			update: jest.fn(),
 		},
 	},
 }));
@@ -131,15 +132,15 @@ describe("Message Service", () => {
 			expect(prisma.message.findMany).toHaveBeenCalledTimes(1);
 			expect(prisma.message.findMany).toHaveBeenCalledWith({
 				where: { chatId: chatId, chat: { userId: userId } },
-				orderBy: {
-					createdAt: "asc",
-				},
+				take: 20,
+				skip: 0,
 				select: {
 					difficulty: true,
 					id: true,
 					sender: true,
 					text: true,
 				},
+				orderBy: [{ createdAt: "desc" }, { sender: "asc" }],
 			});
 		});
 	});

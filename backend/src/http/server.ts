@@ -22,7 +22,12 @@ const server = fastify().withTypeProvider<ZodTypeProvider>();
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);
 server.register(fastifyCors, {
-	origin: "http://localhost:3000",
+	origin: (origin, cb) => {
+		if (origin && env.CORS_ORIGIN.includes(origin)) {
+			return cb(null, true);
+		}
+		cb(new Error("Not allowed"), false);
+	},
 	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 	allowedHeaders: ["Content-Type", "Authorization"],
 	credentials: true,
