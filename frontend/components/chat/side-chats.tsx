@@ -26,6 +26,7 @@ import { getChat } from "@/services/get-chat";
 import { getMessages } from "@/services/get-messages";
 import { getUser } from "@/services/get-user";
 import type { IChat } from "@/types/chat";
+import { Skeleton } from "../ui/skeleton";
 import { Spinner } from "../ui/spinner";
 
 export function SideChats() {
@@ -37,6 +38,7 @@ export function SideChats() {
 		data: user,
 		isError,
 		isSuccess,
+		isLoading: userIsLoading,
 	} = useQuery({
 		queryKey: ["user"],
 		queryFn: getUser,
@@ -205,10 +207,11 @@ export function SideChats() {
 													/>
 												) : (
 													<div
-														className={`flex items-center hover:bg-accent/10 px-1 justify-between rounded-md h-10 mb-2 ${activeChat === chat.id
+														className={`flex items-center hover:bg-accent/10 px-1 justify-between rounded-md h-10 mb-2 ${
+															activeChat === chat.id
 																? "bg-accent/10"
 																: "bg-transparent"
-															}`}
+														}`}
 													>
 														<Button
 															className="cursor-pointer flex-1 flex justify-start min-w-0"
@@ -250,11 +253,18 @@ export function SideChats() {
 			</SidebarContent>
 			<SidebarFooter className="border-t  border-zinc-500 ">
 				<div className="flex items-center justify-between m-2">
-					<p>Bem-vindo, {user?.name}.</p>
+					{userIsLoading ? (
+						<Skeleton className="w-48 h-6 rounded-full" />
+					) : (
+						<p className="truncate w-48">
+							Bem-vindo, {user?.name}aaaaaaaaaaaaaaa.
+						</p>
+					)}
 					<Button
 						variant="ghost"
 						onClick={() => handleLogout()}
 						aria-label="Sair"
+						disabled={userIsLoading}
 					>
 						<LogOut color="red" className="w-5 h-5" />
 					</Button>

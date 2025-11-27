@@ -80,7 +80,9 @@ export function SelectStudentClass({ slug }: { slug: string }) {
 					return {
 						...old,
 						pages: old.pages.map((page) =>
-							page.map((chat) => (chat.id === slug ? { ...chat, classId } : chat)),
+							page.map((chat) =>
+								chat.id === slug ? { ...chat, classId } : chat,
+							),
 						),
 					};
 				},
@@ -118,6 +120,7 @@ export function SelectStudentClass({ slug }: { slug: string }) {
 				Turma
 			</label>
 			<Select
+				name={"class-select"}
 				value={selectedClass}
 				onValueChange={handleValueChange}
 				disabled={isLocked || updateClassMutation.isPending}

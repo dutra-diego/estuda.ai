@@ -1,7 +1,6 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Report } from "@/components/classes/report";
@@ -27,7 +26,6 @@ import { updateReport } from "@/services/update-report";
 import type { IReport } from "@/types/report";
 
 export default function Page() {
-	const router = useRouter();
 	const { user, setActiveChat } = useContext(FormTypeContext);
 	const [actuallyPage, setActuallyPage] = useState<"report" | "students">(
 		"report",

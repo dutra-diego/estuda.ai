@@ -192,6 +192,7 @@ export default function Page() {
 							control={control}
 							render={({ field }) => (
 								<Select
+									name={field.name}
 									value={field.value}
 									onValueChange={field.onChange}
 									disabled={createMessageMutation.isPending}

@@ -79,6 +79,7 @@ export function FormChat() {
 						control={control}
 						render={({ field }) => (
 							<Select
+								name={field.name}
 								value={field.value}
 								onValueChange={field.onChange}
 								disabled={isPending}

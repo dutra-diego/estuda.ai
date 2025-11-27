@@ -6,7 +6,11 @@ import { env } from "../src/config/env";
 const prisma = new PrismaClient();
 
 async function seed() {
-	const user = await prisma.user.findFirst();
+	const user = await prisma.user.findFirst({
+		where: {
+			email: "professor@teste.com",
+		},
+	});
 
 	if (user) {
 		console.log("O banco de dados já foi populado.");
@@ -18,7 +22,7 @@ async function seed() {
 
 	const teacher = await prisma.user.create({
 		data: {
-			email: "professor@educa.ai",
+			email: "professor@teste.com",
 			name: "Professor Teste",
 			password: teacherPassword,
 			role: "teacher",
@@ -33,7 +37,7 @@ async function seed() {
 
 	const student = await prisma.user.create({
 		data: {
-			email: "aluno@educa.ai",
+			email: "aluno@teste.com",
 			name: "Aluno Teste",
 			password: studentPassword,
 			role: "student",
