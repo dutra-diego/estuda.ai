@@ -1,6 +1,7 @@
 import "dotenv/config";
 import fastifyCors from "@fastify/cors";
 import fastifyJwt from "@fastify/jwt";
+import fastifyRateLimit from "@fastify/rate-limit";
 import fastify, { type FastifyError } from "fastify";
 import {
 	serializerCompiler,
@@ -21,6 +22,12 @@ const server = fastify().withTypeProvider<ZodTypeProvider>();
 
 server.setValidatorCompiler(validatorCompiler);
 server.setSerializerCompiler(serializerCompiler);
+server.register(fastifyRateLimit, {
+	max: 100,
+	timeWindow: "2 minute",
+	global: true,
+	keyGenerator: (request) => request.ip,
+});
 server.register(fastifyCors, {
 	origin: (origin, cb) => {
 		if (origin && env.CORS_ORIGIN.includes(origin)) {
