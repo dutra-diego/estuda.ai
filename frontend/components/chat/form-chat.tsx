@@ -105,7 +105,7 @@ export function FormChat() {
 				{createChatMutation.isPending ? (
 					<Spinner className="size-8 h-96 self-center" />
 				) : (
-					<ChatSlug />
+					<ChatSlug isNewMessage={false} />
 				)}
 
 				<div className="flex border border-zinc-500 w-11/12 lg:w-7/12 items-center h-[150px] rounded-md">
