@@ -31,7 +31,11 @@ const ChatSlug = dynamic(
 			default: m.ChatSlug,
 		})),
 	{
-		loading: () => <Spinner className="justify-self-center size-8" />,
+		loading: () => (
+			<div className="flex justify-center w-full">
+				<Spinner className="size-8" />
+			</div>
+		),
 		ssr: false,
 	},
 );
@@ -230,12 +234,12 @@ export default function Page() {
 					className="w-11/12 p-3 h-[580px] lg:h-[700px] border border-zinc-500 rounded-md overflow-y-auto scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-thumb-gray-800 scrollbar-track-gray-900 scrollbar-hover:scrollbar-thumb-gray-600"
 				>
 					{messagesLoading ? (
-						<Spinner className="size-8 justify-self-center" />
+						<Spinner className="size-8 flex justify-self-center" />
 					) : (
 						<div ref={contentRef} className="flex flex-col">
 							<div ref={ref} className="h-4 w-full flex justify-center">
 								{isFetchingNextPage && (
-									<Spinner className="size-8 justify-self-center" />
+									<Spinner className="size-8 w justify-self-center" />
 								)}
 							</div>
 							<ChatSlug isNewMessage={isNewMessage} />
@@ -257,12 +261,12 @@ export default function Page() {
 								handleSubmit(onValid, onInvalid)();
 							}
 						}}
-						disabled={createMessageMutation.isPending}
+						disabled={createMessageMutation.isPending || messagesLoading}
 					/>
 					<button
 						className="cursor-pointer hover:text-blue-400 transition-colors px-4"
 						type="submit"
-						disabled={createMessageMutation.isPending}
+						disabled={createMessageMutation.isPending || messagesLoading}
 						aria-label="Enviar mensagem"
 					>
 						<SendHorizonal className="w-6 h-6" aria-hidden="true" />
