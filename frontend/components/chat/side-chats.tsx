@@ -256,9 +256,7 @@ export function SideChats() {
 					{userIsLoading ? (
 						<Skeleton className="w-48 h-6 rounded-full" />
 					) : (
-						<p className="truncate w-48">
-							Bem-vindo, {user?.name}aaaaaaaaaaaaaaa.
-						</p>
+						<p className="truncate w-48">Bem-vindo, {user?.name}.</p>
 					)}
 					<Button
 						variant="ghost"
