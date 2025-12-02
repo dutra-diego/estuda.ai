@@ -1,8 +1,8 @@
 import { getMessageAI } from "../../src/http/functions/get-message-ai";
-import { prisma } from "../../src/http/lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { reportService } from "../../src/services/report-service";
 
-jest.mock("../../src/http/lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
 	prisma: {
 		report: {
 			create: jest.fn(),
@@ -49,7 +49,6 @@ describe("Report Service", () => {
 
 	describe("createReport", () => {
 		it("should create a report if student history exists", async () => {
-	
 			const expectedReport = { id: "report-1", content: mockAiMessage };
 			const mockTxClient: MockPrismaTransactionClient = {
 				enrollment: {
@@ -145,7 +144,7 @@ describe("Report Service", () => {
 
 		it("should return an empty array if no student history is found for update", async () => {
 			const mockTxClient = {
-				enrollment: { findMany: jest.fn().mockResolvedValue([]) }, 
+				enrollment: { findMany: jest.fn().mockResolvedValue([]) },
 				chat: { findMany: jest.fn() },
 			};
 			mockTransactionImplementation(mockTxClient);

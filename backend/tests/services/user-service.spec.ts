@@ -1,11 +1,10 @@
 import type { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { mockDeep, mockReset } from "jest-mock-extended";
-import { prisma } from "../../src/http/lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { userService } from "../../src/services/user-service";
 
-
-jest.mock("../../src/http/lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
 	__esModule: true,
 	prisma: mockDeep<PrismaClient>(),
 }));
@@ -169,11 +168,9 @@ describe("User Service", () => {
 		});
 
 		it("should throw an error for invalid credentials if user not found", async () => {
-
 			const loginData = { email: "test@example.com", password: "password123" };
 			(prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-		
 			await expect(userService.loginUser(loginData)).rejects.toThrow(
 				"Unauthorized",
 			);

@@ -66,7 +66,7 @@ export function FormChat() {
 	const onInvalid = () => {
 		toast.error("Por favor, preencha todos os campos corretamente.");
 	};
-	const isPending = createChatMutation.isPending;
+
 	return (
 		<div className="w-full items-center lg:justify-center p-2 ">
 			<form
@@ -82,7 +82,7 @@ export function FormChat() {
 								name={field.name}
 								value={field.value}
 								onValueChange={field.onChange}
-								disabled={isPending}
+								disabled={createChatMutation.isPending}
 							>
 								<SelectTrigger className="w-46">
 									<SelectValue placeholder="Nível" />
@@ -102,7 +102,7 @@ export function FormChat() {
 					/>
 				</div>
 
-				{isPending ? (
+				{createChatMutation.isPending ? (
 					<Spinner className="size-8 h-96 self-center" />
 				) : (
 					<ChatSlug />
@@ -119,11 +119,11 @@ export function FormChat() {
 								e.preventDefault();
 							}
 						}}
-						disabled={isPending}
+						disabled={createChatMutation.isPending}
 					/>
 					<button
 						type="submit"
-						disabled={isPending}
+						disabled={createChatMutation.isPending}
 						className="cursor-pointer"
 						aria-label="Enviar"
 					>

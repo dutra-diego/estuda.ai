@@ -41,7 +41,7 @@ Você receberá um compilado de todos os prompts dos alunos.
 
 **2. Principais Lacunas de Conhecimento (Dificuldades Comuns)**
 (Liste de 3 a 5 pontos onde os alunos mais demonstraram confusão. Seja específico.)
-
+**EXEMPLO:**
 * **Dificuldade 1:** [Descreva o conceito, ex: "Diferença entre 'let' e 'const'"]
     * *Evidência:* Os alunos frequentemente perguntam [exemplo de pergunta comum] ou tentam [exemplo de erro comum].
 * **Dificuldade 2:** [Descreva o conceito, ex: "Manipulação de objetos aninhados"]

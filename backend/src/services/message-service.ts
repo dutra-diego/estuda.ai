@@ -1,7 +1,7 @@
 import { appEmitter } from "../events/app-emiter";
 import { getMessageAI } from "../http/functions/get-message-ai";
-import { AppError } from "../http/lib/errors";
-import { prisma } from "../http/lib/prisma";
+import { AppError } from "../lib/errors";
+import { prisma } from "../lib/prisma";
 import type { geminiStudentSchemaType } from "../schemas/gemini-schema";
 import type { CreateMessageType } from "../schemas/message-schema";
 

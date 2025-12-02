@@ -9,7 +9,7 @@ import {
 	type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { env } from "../config/env";
-import { isAppError } from "./lib/errors";
+import { isAppError } from "../lib/errors";
 import { chatRoutes } from "./routes/chat-routes";
 import { classRoutes } from "./routes/class-routes";
 import { invitationRoutes } from "./routes/invitation-routes";

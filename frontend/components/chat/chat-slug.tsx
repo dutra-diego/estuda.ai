@@ -40,10 +40,10 @@ const MessageItem = React.memo<{
 
 MessageItem.displayName = "MessageItem";
 interface ChatSlugProps {
-	liveMessageId?: string;
+	isNewMessage: boolean;
 }
 
-export function ChatSlug({ liveMessageId }: ChatSlugProps) {
+export function ChatSlug({ isNewMessage }: ChatSlugProps) {
 	const { activeChat, localMessages } = useContext(FormTypeContext);
 
 	return (
@@ -56,12 +56,15 @@ export function ChatSlug({ liveMessageId }: ChatSlugProps) {
 					</h1>
 				</div>
 			) : (
-				localMessages.map((message, idx, arr) => (
+				localMessages.map((message) => (
 					<MessageItem
 						key={message.id}
 						text={message.text}
 						sender={message.sender}
-						isLast={idx === arr.length - 1 && message.id === liveMessageId}
+						isLast={
+							localMessages[localMessages.length - 1].id === message.id &&
+							isNewMessage
+						}
 					/>
 				))
 			)}

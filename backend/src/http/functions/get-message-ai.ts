@@ -1,8 +1,8 @@
+import { gemini } from "../../lib/gemini";
 import type {
 	geminiStudentSchemaType,
 	geminiTeacherSchemaType,
 } from "../../schemas/gemini-schema";
-import { gemini } from "../lib/gemini";
 import { systemInstructionsAI } from "./system-instructions-ai";
 
 export async function getMessageAI<

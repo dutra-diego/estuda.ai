@@ -1,7 +1,7 @@
-import { prisma } from "../../src/http/lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { invitationService } from "../../src/services/invitation-service";
 
-jest.mock("../../src/http/lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
 	prisma: {
 		user: {
 			findUnique: jest.fn(),
@@ -93,7 +93,6 @@ describe("Invitation Service", () => {
 
 	describe("updateInvitation", () => {
 		it("should update status without a transaction if not 'accepted'", async () => {
-		
 			const email = "student@example.com";
 			const classId = "class-abc";
 			const updateData = {

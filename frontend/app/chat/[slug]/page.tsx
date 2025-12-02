@@ -72,13 +72,13 @@ export default function Page() {
 		isReadyToLoadMore,
 	} = useChatMessages(slug, user, setLocalMessages);
 
-	const { liveMessageId } = useChatSSE(slug, setLocalMessages);
+	const { isNewMessage } = useChatSSE(slug, setLocalMessages);
 
 	useChatScroll({
 		scrollContainerRef,
 		contentRef,
 		localMessages,
-		liveMessageId,
+		isNewMessage,
 		isFetchingNextPage,
 		initialLoad,
 	});
@@ -236,7 +236,7 @@ export default function Page() {
 							<div ref={ref} className="h-4 w-full flex justify-center">
 								{isFetchingNextPage && <Spinner />}
 							</div>
-							<ChatSlug liveMessageId={liveMessageId ?? undefined} />
+							<ChatSlug isNewMessage={isNewMessage} />
 						</div>
 					)}
 				</div>

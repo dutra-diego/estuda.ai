@@ -1,4 +1,4 @@
-import { prisma } from "../http/lib/prisma";
+import { prisma } from "../lib/prisma";
 import type { ClassType, UpdateClassType } from "../schemas/class-schema";
 
 export const classService = {

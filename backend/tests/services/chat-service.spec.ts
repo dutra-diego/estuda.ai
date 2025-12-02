@@ -1,8 +1,8 @@
 import { getMessageAI } from "../../src/http/functions/get-message-ai";
-import { prisma } from "../../src/http/lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { chatService } from "../../src/services/chat-service";
 
-jest.mock("../../src/http/lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
 	prisma: {
 		chat: {
 			create: jest.fn(),

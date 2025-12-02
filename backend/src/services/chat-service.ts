@@ -1,6 +1,6 @@
 import { getMessageAI } from "../http/functions/get-message-ai";
-import { AppError } from "../http/lib/errors";
-import { prisma } from "../http/lib/prisma";
+import { AppError } from "../lib/errors";
+import { prisma } from "../lib/prisma";
 import type {
 	CreateChatType,
 	CreateChatWithMessageType,

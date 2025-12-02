@@ -1,8 +1,8 @@
 import { getMessageAI } from "../../src/http/functions/get-message-ai";
-import { gemini } from "../../src/http/lib/gemini";
+import { gemini } from "../../src/lib/gemini";
 import type { geminiTeacherSchemaType } from "../../src/schemas/gemini-schema";
 
-jest.mock("../../src/http/lib/gemini", () => ({
+jest.mock("../../src/lib/gemini", () => ({
 	gemini: {
 		models: {
 			generateContent: jest.fn(),
@@ -36,7 +36,6 @@ describe("getMessageAI", () => {
 		];
 
 		await getMessageAI("student", mockMessages);
-
 
 		expect(gemini.chats.create).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -117,7 +116,7 @@ describe("getMessageAI", () => {
 		expect(gemini.models.generateContent).toHaveBeenCalledWith(
 			expect.objectContaining({
 				model: "gemini-2.5-flash",
-		
+
 				contents: expect.stringContaining("--- Conversa 1 ---"),
 			}),
 		);

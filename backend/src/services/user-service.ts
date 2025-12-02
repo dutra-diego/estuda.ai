@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { env } from "../config/env";
-import { AppError } from "../http/lib/errors";
-import { prisma } from "../http/lib/prisma";
+import { AppError } from "../lib/errors";
+import { prisma } from "../lib/prisma";
 import type { CreateUserType, LoginUserType } from "../schemas/user-schema";
 export const userService = {
 	async createUser(data: CreateUserType) {

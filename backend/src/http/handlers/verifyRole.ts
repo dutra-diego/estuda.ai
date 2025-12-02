@@ -1,6 +1,6 @@
 import type { FastifyRequest } from "fastify";
+import { AppError } from "../../lib/errors";
 import type { JwtLoginType } from "../../schemas/jwtLogin-schema";
-import { AppError } from "../lib/errors";
 
 export const verifyUserRole = (requiredRole: "student" | "teacher") => {
 	return async (request: FastifyRequest) => {

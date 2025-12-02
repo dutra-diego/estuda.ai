@@ -1,9 +1,9 @@
 import { appEmitter } from "../../src/events/app-emiter";
 import { getMessageAI } from "../../src/http/functions/get-message-ai";
-import { prisma } from "../../src/http/lib/prisma";
+import { prisma } from "../../src/lib/prisma";
 import { messageService } from "../../src/services/message-service";
 
-jest.mock("../../src/http/lib/prisma", () => ({
+jest.mock("../../src/lib/prisma", () => ({
 	prisma: {
 		$transaction: jest.fn(),
 

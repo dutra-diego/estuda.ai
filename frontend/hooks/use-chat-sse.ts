@@ -5,7 +5,7 @@ export function useChatSSE(
 	slug: string,
 	setLocalMessages: React.Dispatch<React.SetStateAction<IChatMessage[]>>,
 ) {
-	const [liveMessageId, setLiveMessageId] = useState<string | null>(null);
+	const [isNewMessage, setNewMessage] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!slug) return;
@@ -32,7 +32,7 @@ export function useChatSSE(
 					if (data.type === "new-message") {
 						const { message } = data.payload;
 
-						setLiveMessageId(message.id);
+						setNewMessage(true);
 
 						setLocalMessages((prev) => [
 							...prev,
@@ -73,9 +73,9 @@ export function useChatSSE(
 			isMounted = false;
 			eventSource?.close();
 			if (reconnectTimeout) clearTimeout(reconnectTimeout);
-			setLiveMessageId(null);
+			setNewMessage(false);
 		};
 	}, [slug, setLocalMessages]);
 
-	return { liveMessageId };
+	return { isNewMessage };
 }
