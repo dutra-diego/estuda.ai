@@ -238,9 +238,7 @@ export default function Page() {
 					) : (
 						<div ref={contentRef} className="flex flex-col">
 							<div ref={ref} className="h-4 w-full flex justify-center">
-								{isFetchingNextPage && (
-									<Spinner className="size-8 w justify-self-center" />
-								)}
+								{isFetchingNextPage && <Spinner className="size-8" />}
 							</div>
 							<ChatSlug isNewMessage={isNewMessage} />
 						</div>
