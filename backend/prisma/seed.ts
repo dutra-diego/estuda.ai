@@ -1,9 +1,13 @@
 import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { env } from "../src/config/env";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
+const prisma = new PrismaClient({
+	adapter: adapter,
+});
 
 async function seed() {
 	const user = await prisma.user.findFirst({

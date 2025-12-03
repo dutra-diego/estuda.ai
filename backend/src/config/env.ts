@@ -19,6 +19,7 @@ function parseOrigin(val: unknown): string[] | undefined {
 }
 
 const envSchema = z.object({
+	DATABASE_URL: z.string().min(1, "Error DATABASE_URL is required"),
 	SECRET_JWT: z.string().min(1, "Error SECRET_JWT is required"),
 	GOOGLE_API_KEY: z.string().min(1, "Error GOOGLE_API_KEY is required"),
 	SALT_ROUNDS: z.coerce.number().min(1, "Error SALT_ROUNDS is required"),
