@@ -39,29 +39,24 @@ async function getStudentChatHistory(
 
 export const reportService = {
 	async createReport(teacherId: string, classId: string) {
-		const geminiHistoryStudents = await prisma.$transaction(
-			async (transaction: Prisma.TransactionClient) => {
-				return getStudentChatHistory(teacherId, classId, transaction, true);
-			},
-		);
-		if (geminiHistoryStudents.length === 0) {
-			return [];
-		}
+  const geminiHistoryStudents = await getStudentChatHistory(
+    teacherId, classId, prisma, true
+  );
+  
+  if (geminiHistoryStudents.length === 0) {
+    return [];
+  }
 
-		const aiMessage = await getMessageAI(
-			"teacher",
-			geminiHistoryStudents as geminiTeacherSchemaType[],
-		);
-		if (!aiMessage) {
-			throw new AppError(500, "AI service error");
-		}
-		return await prisma.report.create({
-			data: {
-				classId,
-				content: aiMessage,
-			},
-		});
-	},
+  const aiMessage = await getMessageAI("teacher", geminiHistoryStudents as geminiTeacherSchemaType[]);
+  
+  if (!aiMessage) {
+    throw new AppError(500, "AI service error");
+  }
+  
+  return prisma.report.create({
+    data: { classId, content: aiMessage },
+  });
+},
 
 	async getReport(teacherId: string, classId: string) {
 		return await prisma.report.findUnique({

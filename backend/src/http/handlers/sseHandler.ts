@@ -18,8 +18,7 @@ appEmitter.on("send-sse-event", (chatId: string, data: SseEvent) => {
 			} else {
 				deadConnections.add(connection);
 			}
-		} catch (error) {
-			console.error("SSE write error:", error);
+		} catch (_error) {
 			deadConnections.add(connection);
 		}
 	});
@@ -68,8 +67,8 @@ export const sseConnectionHandler = {
 		connections.forEach((conn) => {
 			try {
 				conn.raw.destroy();
-			} catch (error) {
-				console.error("Error closing SSE connection:", error);
+			} catch (_error) {
+				
 			}
 		});
 		chats.delete(chatId);

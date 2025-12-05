@@ -45,15 +45,13 @@ export function useChatSSE(
 						]);
 					}
 					reconnectAttempts = 0;
-				} catch (error) {
-					console.error("SSE message parsing error:", error);
+				} catch (_error) {
+				
 				}
 			};
 
-			eventSource.onerror = (error) => {
+			eventSource.onerror = (_error) => {
 				if (!isMounted) return;
-
-				console.error("SSE connection error:", error);
 				eventSource?.close();
 
 				if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {

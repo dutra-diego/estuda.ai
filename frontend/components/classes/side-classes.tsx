@@ -41,7 +41,7 @@ export function SideClass() {
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		refetchOnMount: false,
-		staleTime: 15,
+		staleTime: Infinity,
 	});
 
 	const { data: classData } = useQuery({

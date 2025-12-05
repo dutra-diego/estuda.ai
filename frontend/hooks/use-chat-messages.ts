@@ -66,33 +66,19 @@ export function useChatMessages(
 		}
 
 		setLocalMessages((prev) => {
-			const serverIds = new Set();
-			for (let i = 0; i < flattenedMessages.length; i++) {
-				serverIds.add(flattenedMessages[i].id);
-			}
+			const serverMessageKeys = new Set(
+				flattenedMessages.map(
+					(m) => `${m.text}|${m.sender}|${m.difficulty}`,
+				),
+			);
 
-			const optimisticMessages = [];
-			for (let i = 0; i < prev.length; i++) {
-				const m = prev[i];
-				if (!m.isOptimistic) continue;
+			const optimisticMessages = prev.filter((m) => {
+				if (!m.isOptimistic) return false;
+				const key = `${m.text}|${m.sender}|${m.difficulty}`;
+				return !serverMessageKeys.has(key);
+			});
 
-				let found = false;
-				for (let j = 0; j < flattenedMessages.length; j++) {
-					const sm = flattenedMessages[j];
-					if (
-						sm.text === m.text &&
-						sm.sender === m.sender &&
-						sm.difficulty === m.difficulty
-					) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) optimisticMessages.push(m);
-			}
-
-			return flattenedMessages.concat(optimisticMessages);
+			return [...flattenedMessages, ...optimisticMessages];
 		});
 	}, [flattenedMessages, setLocalMessages]);
 
