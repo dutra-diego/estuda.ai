@@ -25,7 +25,7 @@ const envSchema = z.object({
 	SALT_ROUNDS: z.coerce.number().min(1, "Error SALT_ROUNDS is required"),
 	CORS_ORIGIN: z
 		.preprocess(parseOrigin, z.array(z.string()))
-		.default(["http://localhost:3000"]),
+		.default(["http://localhost:3000", "https://estuda-ai-three.vercel.app"]),
 	PORT: z.coerce.number().min(1, "Error PORT is required"),
 });
 export const env = envSchema.parse(process.env);

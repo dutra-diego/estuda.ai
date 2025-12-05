@@ -57,12 +57,16 @@ export function SideChats() {
 	} = useInfiniteQuery({
 		queryKey: ["chats"],
 		queryFn: ({ pageParam }) => getChat(pageParam),
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+		retry: false,
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, allPages) => {
 			if (!Array.isArray(lastPage) || lastPage.length < 11) return undefined;
 			const pages = Array.isArray(allPages) ? allPages : [];
 			return pages.flat().length;
 		},
+
 	});
 
 	const { ref, inView } = useInView();

@@ -1,10 +1,14 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { sseConnectionHandler } from "../http/handlers/sseHandler";
 import { env } from "../config/env";
+import { sseConnectionHandler } from "../http/handlers/sseHandler";
 
 export const sseController = {
 	async connect(req: FastifyRequest, reply: FastifyReply) {
-		reply.raw.setHeader("Access-Control-Allow-Origin", env.CORS_ORIGIN);
+		const origin = req.headers.origin;
+
+		if (origin && env.CORS_ORIGIN.includes(origin)) {
+			reply.raw.setHeader("Access-Control-Allow-Origin", origin);
+		}
 		reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
 		reply.raw.setHeader("Vary", "Origin");
 		reply.raw.setHeader("Content-Type", "text/event-stream");
