@@ -9,7 +9,12 @@ jest.mock("../../src/lib/prisma", () => ({
 			findUnique: jest.fn(),
 			update: jest.fn(),
 		},
-
+		enrollment: {
+			findMany: jest.fn(),
+		},
+		chat: {
+			findMany: jest.fn(),
+		},
 		$transaction: jest.fn(),
 	},
 }));
@@ -50,23 +55,18 @@ describe("Report Service", () => {
 	describe("createReport", () => {
 		it("should create a report if student history exists", async () => {
 			const expectedReport = { id: "report-1", content: mockAiMessage };
-			const mockTxClient: MockPrismaTransactionClient = {
-				enrollment: {
-					findMany: jest.fn().mockResolvedValue([{ studentId: "s1" }]),
-				},
-				chat: { findMany: jest.fn().mockResolvedValue(mockChatHistory) },
-			};
-			mockTransactionImplementation(mockTxClient);
-
+			(prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+				{ studentId: "s1" },
+			]);
+			(prisma.chat.findMany as jest.Mock).mockResolvedValue(mockChatHistory);
 			(getMessageAI as jest.Mock).mockResolvedValue(mockAiMessage);
 			(prisma.report.create as jest.Mock).mockResolvedValue(expectedReport);
 
 			const result = await reportService.createReport(teacherId, classId);
 
 			expect(result).toEqual(expectedReport);
-			expect(prisma.$transaction).toHaveBeenCalledTimes(1);
-			expect(mockTxClient.enrollment.findMany).toHaveBeenCalled();
-			expect(mockTxClient.chat.findMany).toHaveBeenCalled();
+			expect(prisma.enrollment.findMany).toHaveBeenCalled();
+			expect(prisma.chat.findMany).toHaveBeenCalled();
 			expect(getMessageAI).toHaveBeenCalledWith("teacher", mockChatHistory);
 			expect(prisma.report.create).toHaveBeenCalledWith({
 				data: { classId, content: mockAiMessage },
@@ -74,28 +74,21 @@ describe("Report Service", () => {
 		});
 
 		it("should return an empty array if no student history is found", async () => {
-			const mockTxClient = {
-				enrollment: { findMany: jest.fn().mockResolvedValue([]) },
-				chat: { findMany: jest.fn() },
-			};
-			mockTransactionImplementation(mockTxClient);
+			(prisma.enrollment.findMany as jest.Mock).mockResolvedValue([]);
 
 			const result = await reportService.createReport(teacherId, classId);
 
 			expect(result).toEqual([]);
-			expect(mockTxClient.chat.findMany).not.toHaveBeenCalled();
+			expect(prisma.chat.findMany).not.toHaveBeenCalled();
 			expect(getMessageAI).not.toHaveBeenCalled();
 			expect(prisma.report.create).not.toHaveBeenCalled();
 		});
 
 		it("should throw an error if AI message generation fails", async () => {
-			const mockTxClient = {
-				enrollment: {
-					findMany: jest.fn().mockResolvedValue([{ studentId: "s1" }]),
-				},
-				chat: { findMany: jest.fn().mockResolvedValue(mockChatHistory) },
-			};
-			mockTransactionImplementation(mockTxClient);
+			(prisma.enrollment.findMany as jest.Mock).mockResolvedValue([
+				{ studentId: "s1" },
+			]);
+			(prisma.chat.findMany as jest.Mock).mockResolvedValue(mockChatHistory);
 			(getMessageAI as jest.Mock).mockResolvedValue(null);
 
 			await expect(
