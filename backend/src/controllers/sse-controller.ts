@@ -6,9 +6,10 @@ export const sseController = {
 	async connect(req: FastifyRequest, reply: FastifyReply) {
 		const origin = req.headers.origin;
 
-		if (origin && env.CORS_ORIGIN.includes(origin)) {
-			reply.raw.setHeader("Access-Control-Allow-Origin", origin);
+		if (!origin || !env.CORS_ORIGIN.includes(origin)) {
+			return reply.status(403).send({ error: "Origin not allowed" });
 		}
+		reply.raw.setHeader("Access-Control-Allow-Origin", origin);
 		reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
 		reply.raw.setHeader("Vary", "Origin");
 		reply.raw.setHeader("Content-Type", "text/event-stream");
