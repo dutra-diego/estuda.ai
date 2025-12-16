@@ -3,7 +3,7 @@ import type { ClassType, UpdateClassType } from "../schemas/class-schema";
 
 export const classService = {
 	async createClass(userId: string, data: ClassType) {
-		return prisma.class.create({
+		return await prisma.class.create({
 			data: {
 				name: data.name,
 				teacher: { connect: { id: userId } },
