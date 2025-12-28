@@ -1,4 +1,4 @@
-# Estude.AI
+# Estuda.AI
 
 Sistema de educação inteligente com IA para auxiliar professores e alunos no processo de ensino-aprendizagem, onde o aluno possui um professor socrático que sempre o incentiva a ter pensamentos críticos e o professor terá um relatório de dificuldades que os alunos possuem.
 
