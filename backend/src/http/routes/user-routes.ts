@@ -8,8 +8,8 @@ export const userRoutes: FastifyPluginAsyncZod = async (server) => {
 		"/users",
 		{ schema: { body: createUserSchema } },
 		async (req, reply) => {
-			const user = await userService.createUser(req.body);
-			reply.status(201).send(user);
+			await userService.createUser(req.body);
+			reply.status(204).send();
 		},
 	);
 
